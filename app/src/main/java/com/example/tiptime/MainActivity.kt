@@ -58,7 +58,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.Switch
-
+/*Importamos las librerias*/
+import androidx.annotation.DrawableRes
+import androidx.compose.material3.Icon
+import androidx.compose.ui.res.painterResource
 
 
 class MainActivity : ComponentActivity() {
@@ -109,9 +112,11 @@ fun TipTimeLayout() {
                 .padding(bottom = 16.dp, top = 40.dp)
                 .align(alignment = Alignment.Start)
         )
+
         EditNumberField(
             /*Establecemos label en el recurso de Cadens R.R.string.bill_amount*/
             label = R.string.bill_amount,
+            leadingIcon = R.drawable.money,
             /*Pasamos los parrametros que teniamos en la otra funcion*/
             keyboardOptions = KeyboardOptions.Default.copy(
                 keyboardType = KeyboardType.Number,
@@ -124,6 +129,7 @@ fun TipTimeLayout() {
         /*Agregamos otro campo de texto para el porcentaje de propina*/
         EditNumberField(
             label = R.string.how_was_the_service,
+            leadingIcon = R.drawable.percent,
             /*Aqui pegamos lo mismo que la otra llamada pero en el imeAction ponemos Done envez de next*/
             keyboardOptions = KeyboardOptions.Default.copy(
                 keyboardType = KeyboardType.Number,
@@ -154,6 +160,8 @@ fun EditNumberField(
     /*Agregamos un recurso de cadeda de tipo Int*/
     /*Indicamos que el parametro Label sea un recurso de cadena*/
     @StringRes label: Int,
+    /*Agregamos el parametro leadingIcon  de tipo Int con anotacion @DrawableRes */
+    @DrawableRes leadingIcon: Int,
     /*Agregamos un parametro KeyboardOptions*/
     keyboardOptions: KeyboardOptions,
     value: String,
@@ -162,6 +170,8 @@ fun EditNumberField(
 ) {
     TextField(
         value = value,
+        /*Agregamos el icono al campo de texto */
+        leadingIcon = { Icon(painter = painterResource(id = leadingIcon), null) },
         singleLine = true,
         modifier = modifier,
         onValueChange = onValueChanged,
