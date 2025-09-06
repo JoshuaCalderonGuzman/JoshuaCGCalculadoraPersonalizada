@@ -48,6 +48,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.tiptime.ui.theme.TipTimeTheme
 import java.text.NumberFormat
+/*Importamos la librería*/
+import androidx.annotation.StringRes
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -70,7 +72,13 @@ fun TipTimeLayout() {
     var amountInput by remember { mutableStateOf("") }
 
     val amount = amountInput.toDoubleOrNull() ?: 0.0
-    val tip = calculateTip(amount)
+
+    /*Agregamos un var llamado tipInput para la variable de estado del campo*/
+    var tipInput by remember { mutableStateOf("") }
+    /*Definimos un elemento de tipo val que comvierte la variable tipInput en Double*/
+    val tipPercent = tipInput.toDoubleOrNull() ?: 0.0
+    /*Se actuaiza la funcion calculaTip() para que pase la variable tipPercent*/
+    val tip = calculateTip(amount, tipPercent )
 
     Column(
         modifier = Modifier
@@ -88,8 +96,19 @@ fun TipTimeLayout() {
                 .align(alignment = Alignment.Start)
         )
         EditNumberField(
+            /*Establecemos label en el recurso de Cadens R.R.string.bill_amount*/
+            label = R.string.bill_amount,
             value = amountInput,
             onValueChanged = { amountInput = it },
+            modifier = Modifier.padding(bottom = 32.dp).fillMaxWidth()
+        )
+        /*Agregamos otro campo de texto para el porcentaje de propina*/
+        EditNumberField(
+            label = R.string.how_was_the_service,
+            /*Configuramos el parametro en el value por el tipInput
+            y actualizamos la variable en la exprecion lambda onValueChanged*/
+            value = tipInput,
+            onValueChanged = { tipInput= it },
             modifier = Modifier.padding(bottom = 32.dp).fillMaxWidth()
         )
         Text(
@@ -102,6 +121,9 @@ fun TipTimeLayout() {
 
 @Composable
 fun EditNumberField(
+    /*Agregamos un recurso de cadeda de tipo Int*/
+    /*Indicamos que el parametro Label sea un recurso de cadena*/
+    @StringRes label : Int,
     value: String,
     onValueChanged: (String) -> Unit,
     modifier: Modifier
@@ -111,7 +133,8 @@ fun EditNumberField(
         singleLine = true,
         modifier = modifier,
         onValueChange = onValueChanged,
-        label = { Text(stringResource(R.string.bill_amount)) },
+        /*Reemplazamos el ID de recurso de cadenas con el parametro Label*/
+        label = { Text(stringResource(label)) },
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
     )
 }
