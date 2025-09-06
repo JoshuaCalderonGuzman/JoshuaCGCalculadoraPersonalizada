@@ -53,7 +53,11 @@ import com.example.tiptime.ui.theme.TipTimeTheme
 import java.text.NumberFormat
 /*Importamos la librería*/
 import androidx.annotation.StringRes
-
+/*Importamos las librerias*/
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.material3.Switch
 
 
 
@@ -83,8 +87,12 @@ fun TipTimeLayout() {
     var tipInput by remember { mutableStateOf("") }
     /*Definimos un elemento de tipo val que comvierte la variable tipInput en Double*/
     val tipPercent = tipInput.toDoubleOrNull() ?: 0.0
-    /*Se actuaiza la funcion calculaTip() para que pase la variable tipPercent*/
-    val tip = calculateTip(amount, tipPercent )
+    /*Se agrega una variable var para el estado del elemento Swich*/
+    var roundUp by remember { mutableStateOf(false) }
+    /*Se actuaiza la funcion calculaTip() para que pase la variable tipPercent */
+    /*Se vuelve a actualizar la variable tip para que la funcion calculateTip acepte roundUp*/
+    val tip = calculateTip(amount, tipPercent, roundUp)
+
 
     Column(
         modifier = Modifier
@@ -127,6 +135,12 @@ fun TipTimeLayout() {
             onValueChanged = { tipInput= it },
             modifier = Modifier.padding(bottom = 32.dp).fillMaxWidth()
         )
+        /*Llamamos a la funcion RoundTheTipRow con los argumentos roundUp,onRoundUpChanged, modifier */
+        RoundTheTipRow(
+            roundUp = roundUp,
+            onRoundUpChanged = { roundUp = it },
+            modifier = Modifier.padding(bottom = 32.dp)
+        )
         Text(
             text = stringResource(R.string.tip_amount, tip),
             style = MaterialTheme.typography.displaySmall
@@ -158,14 +172,44 @@ fun EditNumberField(
         keyboardOptions = keyboardOptions
     )
 }
+/*Creamos una nueva funcion y agregamos un Modifier como argumentos similares a la funcion EfitNumberField()*/
+/*Agregamos los parametros roundUp de tipo Boolean y una funcion lambda que tome un Boolean */
+@Composable
+fun RoundTheTipRow(roundUp: Boolean,
+                   onRoundUpChanged: (Boolean) -> Unit,
+                   modifier: Modifier = Modifier){
+    /*Agregamos un elemento Row con modifier para establecer el ancho de los elementos, centrar la alineacion y garantizar un tamaño de 48dp*/
+    Row(modifier = modifier
+            .fillMaxWidth()
+            .size(48.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ){
+        /*Agregamos la funcion de compatibilidad Text y usa el recurso de cadenas R.string.round_up_tip */
+        Text(text = stringResource(R.string.round_up_tip))
+        /*Agregamos una funcion Swich con un checked y un paramatro con nombre onCheckedChange  */
+        Switch(
+            /*Se agrega este modifier para alinear la funcion Switch al final de la pantalla*/
+            modifier = modifier
+                .fillMaxWidth()
+                .wrapContentWidth(Alignment.End),
+            checked = roundUp,
+            onCheckedChange = onRoundUpChanged,
+        )
+    }
+}
 
 /**
  * Calculates the tip based on the user input and format the tip amount
  * according to the local currency.
  * Example would be "$10.00".
  */
-private fun calculateTip(amount: Double, tipPercent: Double = 15.0): String {
-    val tip = tipPercent / 100 * amount
+/*Agregamos el parrametro roundUp de tipo Boolean*/
+private fun calculateTip(amount: Double, tipPercent: Double = 15.0, roundUp: Boolean): String {
+    var tip = tipPercent / 100 * amount
+    /*Agregamos un if que verifique el valor roundUp, si es true define una variable tip, establécela en kotlin.math.ceil() y pasa la función tip como argumento*/
+    if (roundUp) {
+        tip = kotlin.math.ceil(tip)
+    }
     return NumberFormat.getCurrencyInstance().format(tip)
 }
 
