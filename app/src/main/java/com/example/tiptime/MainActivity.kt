@@ -15,6 +15,7 @@
  */
 package com.example.tiptime
 
+import android.inputmethodservice.Keyboard
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -43,6 +44,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+/*Importamos la libreria */
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -50,6 +53,9 @@ import com.example.tiptime.ui.theme.TipTimeTheme
 import java.text.NumberFormat
 /*Importamos la librería*/
 import androidx.annotation.StringRes
+
+
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -98,6 +104,11 @@ fun TipTimeLayout() {
         EditNumberField(
             /*Establecemos label en el recurso de Cadens R.R.string.bill_amount*/
             label = R.string.bill_amount,
+            /*Pasamos los parrametros que teniamos en la otra funcion*/
+            keyboardOptions = KeyboardOptions.Default.copy(
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Next
+            ),
             value = amountInput,
             onValueChanged = { amountInput = it },
             modifier = Modifier.padding(bottom = 32.dp).fillMaxWidth()
@@ -105,6 +116,11 @@ fun TipTimeLayout() {
         /*Agregamos otro campo de texto para el porcentaje de propina*/
         EditNumberField(
             label = R.string.how_was_the_service,
+            /*Aqui pegamos lo mismo que la otra llamada pero en el imeAction ponemos Done envez de next*/
+            keyboardOptions = KeyboardOptions.Default.copy(
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Done
+            ),
             /*Configuramos el parametro en el value por el tipInput
             y actualizamos la variable en la exprecion lambda onValueChanged*/
             value = tipInput,
@@ -123,7 +139,9 @@ fun TipTimeLayout() {
 fun EditNumberField(
     /*Agregamos un recurso de cadeda de tipo Int*/
     /*Indicamos que el parametro Label sea un recurso de cadena*/
-    @StringRes label : Int,
+    @StringRes label: Int,
+    /*Agregamos un parametro KeyboardOptions*/
+    keyboardOptions: KeyboardOptions,
     value: String,
     onValueChanged: (String) -> Unit,
     modifier: Modifier
@@ -135,7 +153,9 @@ fun EditNumberField(
         onValueChange = onValueChanged,
         /*Reemplazamos el ID de recurso de cadenas con el parametro Label*/
         label = { Text(stringResource(label)) },
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+        /*En keyboardOpcions aseguramos usar otras opciones predeterminadas con KeyboardOptions.Default.copy */
+        /*Eliminamos lo anterior y asignamos el parametro con nombre KeyboardOptions*/
+        keyboardOptions = keyboardOptions
     )
 }
 
